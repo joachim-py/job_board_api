@@ -1,0 +1,150 @@
+### 1. Register a new user
+POST http://localhost:8000/api/v1/users/
+Content-Type: application/json
+
+{
+  "first_name": "candidate",
+  "last_name": "user",
+  "email": "candidate@example.com",
+  "password": "testpass",
+  "user_type": "candidate"
+}
+
+### 2. Login to get JWT token 
+POST http://localhost:8000/api/token/
+Content-Type: application/json
+
+{
+  "username": "candidate@example.com",
+  "password": "testpass"
+}
+
+### 3. Get current user profile (authenticated)
+GET http://localhost:8000/api/v1/users/127/
+
+### 4. Update user profile
+PATCH http://localhost:8000/api/v1/users/me/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ2MDIzLCJpYXQiOjE3NTA5NDI0MjMsImp0aSI6IjA0MDI1NGJkNDlhMzQyOTlhODFiNjJlOTQzNmM0ZmQ0IiwidXNlcl9pZCI6MTc4fQ.Hzs75sWPqZNeexe76dzBjIHsEDHVAmA45z4wZZbhsEs
+
+{
+  "company": 3
+}
+
+### 5. Delete user (self)
+DELETE http://localhost:8000/api/v1/users/me/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQzMDQ1LCJpYXQiOjE3NTA5Mzk0NDUsImp0aSI6IjM4MTQzMmNiNTgzYjQxZTJhMjk5YzA3OWI0Y2FkNTdhIiwidXNlcl9pZCI6MTY4fQ.8MPD8nJe0GiUfBM_9ZcaP56F4Y_n4jZlHc6YUvCWV4Q
+
+
+@baseUrl = http://localhost:8000/api/v1
+@contentType = application/json
+@auth_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ2MDIzLCJpYXQiOjE3NTA5NDI0MjMsImp0aSI6IjA0MDI1NGJkNDlhMzQyOTlhODFiNjJlOTQzNmM0ZmQ0IiwidXNlcl9pZCI6MTc4fQ.Hzs75sWPqZNeexe76dzBjIHsEDHVAmA45z4wZZbhsEs
+
+### 1. Get JWT Token (First authenticate)
+POST {{baseUrl}}/auth/jwt/create/
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 2. Create a new job (Employer only)
+POST {{baseUrl}}/jobs/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+{
+  "title": "Senior Django Developer",
+  "description": "Looking for experienced Django developers",
+  "salary": "90000",
+  "location": "Remote",
+  "company": 34,
+  "job_type": "FT",
+  "is_active": true
+}
+
+
+### 3. List all active jobs (Public)
+@job_id = 152
+GET {{baseUrl}}/jobs/
+Content-Type: {{contentType}}
+
+### 4. Get job details
+GET {{baseUrl}}/jobs/{{job_id}}/
+Content-Type: {{contentType}}
+
+### 5. Update a job (Employer only)
+PATCH {{baseUrl}}/jobs/{{job_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+{
+  "salary": 95000,
+  "description": "Looking for senior Django developers with 5+ years experience"
+}
+
+### 6. Toggle job active status (Employer only)
+POST {{baseUrl}}/jobs/{{job_id}}/toggle_active/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+### 7. Get applications for a job (Employer only)
+GET {{baseUrl}}/jobs/{{job_id}}/applications/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+### 8. List my posted jobs (Employer only)
+GET {{baseUrl}}/jobs/my_jobs/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+### 9. Delete a job (Employer only)
+DELETE {{baseUrl}}/jobs/{{job_id}}/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+### 10. Search/filter jobs
+GET {{baseUrl}}/jobs/?search=django&salary_min=80000&job_type=FT
+Content-Type: {{contentType}}
+
+
+### 11. Get applications for a job (Employer only)
+GET {{baseUrl}}/applications/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+###
+GET {{baseUrl}}/applications/920/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+### 
+PATCH {{baseUrl}}/applications/920/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+{
+  "status": "REV"
+}
+
+###
+
+POST http://localhost:8000/api/v1/applications/920/update_status/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+{
+  "status": "INT"
+}
+
+###
+DELETE {{baseUrl}}/applications/920/
+Content-Type: {{contentType}}
+Authorization: Bearer {{auth_token}}
+
+
+###
+GET {{baseUrl}}/applications/my_applications/
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwOTQ4NjEwLCJpYXQiOjE3NTA5NDUwMTAsImp0aSI6IjhlNjg3NzEwYzk4YjQyOWNiMTJlNTc1MTdiODg4ZjEwIiwidXNlcl9pZCI6MTc5fQ.AYYBK3Cz3ycylUbN75oJy3qOmKqMQypNzD0PpL7Lfaw
