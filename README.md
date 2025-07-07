@@ -104,6 +104,25 @@ python manage.py runserver
 
 The API will be available at: `http://localhost:8000`
 
+### 5. Run Tests
+
+```bash
+pytest -q
+```
+
+### 6. Continuous Integration (GitHub Actions)
+
+A ready-made workflow is included at `.github/workflows/ci.yml`. On every push or pull request to `main`/`master` it will:
+
+1. Check out the code.
+2. Set up Python 3.12.
+3. Spin up a Redis service required by Celery.
+4. Install dependencies and apply migrations.
+5. Execute the full test suite with `pytest -q`.
+
+You can monitor the workflow run under the *Actions* tab of your GitHub repository.
+
+
 ## 📚 API Documentation
 
 ### Interactive Documentation
