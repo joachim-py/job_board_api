@@ -15,19 +15,15 @@ class IsSelfOrAdmin(BasePermission):
         # Allow all for admin users
         if request.user.is_staff:
             return True
-            
-        # Allow read-only for safe methods
-        if request.method in SAFE_METHODS:
-            return True
-            
-        # Allow full access to own profile
+
+        # Allow access (read or write) only to the owner of the object
         return obj == request.user
 
 class IsEmployerOrRecruiterForCompany(BasePermission):
     """Allow job modifications only for associated company employers/recruiters"""
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
-            return True
+            return request.user.user_type == 'employer'
             
         user = request.user
         return (
@@ -44,20 +40,21 @@ class IsEmployerForApplications(BasePermission):
 class IsEmployerOrReadOnly(BasePermission):
     """Allow employers to create/update jobs, everyone can read"""
     def has_permission(self, request, view):
-        if request.method in SAFE_METHODS:  # Fixed: Use SAFE_METHODS directly
-            return True
-        return request.user.is_authenticated and request.user.user_type == 'employer'
+        """Grant access only to authenticated employers. Both read and write operations are restricted to employers."""
+        return (
+            request.user.is_authenticated and
+            request.user.user_type == 'employer'
+        )
 
 class IsCandidateForApplications(BasePermission):
     """Allow candidates to create applications"""
     def has_permission(self, request, view):
-        if view.action == 'create':
-            return request.user.is_authenticated and request.user.user_type == 'candidate'
-        return request.user.is_authenticated
+        """Only authenticated candidates are granted any access to the endpoint."""
+        return request.user.is_authenticated and request.user.user_type == 'candidate'
 
 class IsSelfOrReadOnly(BasePermission):
     """Allow users to only edit their own profile"""
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:  # Fixed: Use SAFE_METHODS directly
+        if request.method in SAFE_METHODS:
             return True
         return obj == request.user
